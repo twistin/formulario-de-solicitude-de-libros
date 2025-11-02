@@ -34,7 +34,19 @@ const App: React.FC = () => {
 
   useEffect(() => {
     // Cargar solicitudes iniciais do backend ao montar o compoñente
-    setRequests(backendService.getRequests());
+    const loadRequests = async () => {
+      try {
+        setIsLoading(true);
+        const data = await backendService.getRequests();
+        setRequests(data);
+      } catch (err) {
+        console.error('Error loading requests:', err);
+        setError('Erro ao cargar as solicitudes. Verifica que o backend estea en execución.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadRequests();
   }, []);
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -66,7 +78,7 @@ const App: React.FC = () => {
 
     try {
       // 1. Gardar a solicitude no backend
-      const savedRequest = backendService.addRequest(newRequestData);
+      const savedRequest = await backendService.addRequest(newRequestData);
       setRequests(prev => [...prev, savedRequest]);
 
       // 2. Xerar o certificado con Gemini
@@ -77,7 +89,7 @@ const App: React.FC = () => {
       setFormData({ name: '', email: '', book: '' });
 
     } catch (err) {
-      setError('Houbo un erro ao procesar a solicitude. Por favor, téntao de novo.');
+      setError('Houbo un erro ao procesar a solicitude. Verifica que o backend estea en execución.');
       console.error(err);
     } finally {
       setIsLoading(false);

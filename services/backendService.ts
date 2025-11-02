@@ -1,71 +1,88 @@
 import type { BookRequest, RequestStatus } from '../types';
 
-const STORAGE_KEY = 'libraryBookRequests';
+// URL base da API Django (ajustable mediante variable de entorno)
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
-// Función para obter todas as solicitudes
-export const getRequests = (): BookRequest[] => {
-  try {
-    const requestsJson = localStorage.getItem(STORAGE_KEY);
-    if (!requestsJson) return [];
-    const parsed = JSON.parse(requestsJson);
-    if (!Array.isArray(parsed)) return [];
-    // Filtrar elementos malformados por seguridade
-    const valid: BookRequest[] = parsed.filter((item: any) => isValidBookRequest(item));
-    return valid;
-  } catch (error) {
-    console.error("Error fetching requests from localStorage", error);
-    return [];
+// Función auxiliar para manexar erros HTTP
+const handleResponse = async <T>(response: Response): Promise<T> => {
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ detail: 'Error descoñecido' }));
+    throw new Error(errorData.detail || `Error HTTP: ${response.status}`);
   }
+  return response.json();
 };
 
-// Función para gardar todas as solicitudes
-const saveRequests = (requests: BookRequest[]) => {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(requests));
-  } catch (error) {
-    console.error("Error saving requests to localStorage", error);
-  }
-};
+// Interface para resposta paginada de Django REST Framework
+interface PaginatedResponse<T> {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: T[];
+}
 
-// Validación simple para asegurar que el objeto cumpre a forma esperada
-const isValidBookRequest = (obj: any): obj is BookRequest => {
-  if (!obj || typeof obj !== 'object') return false;
-  const hasId = typeof obj.id === 'string' && obj.id.length > 0;
-  const hasName = typeof obj.name === 'string';
-  const hasEmail = typeof obj.email === 'string';
-  const hasBook = typeof obj.book === 'string';
-  const hasDate = typeof obj.date === 'string';
-  const validStatus = ['Pendente', 'Aprobado', 'Mercado', 'Rexeitado'].includes(obj.status);
-  return hasId && hasName && hasEmail && hasBook && hasDate && validStatus;
+// Función para obter todas as solicitudes desde o backend Django
+export const getRequests = async (): Promise<BookRequest[]> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/books/`);
+    const data = await handleResponse<PaginatedResponse<BookRequest>>(response);
+    // Django REST Framework devolve os datos en 'results'
+    return data.results || [];
+  } catch (error) {
+    console.error("Error fetching requests from backend:", error);
+    throw error;
+  }
 };
 
 // Función para engadir unha nova solicitude
-export const addRequest = (newRequestData: Omit<BookRequest, 'id' | 'status'>): BookRequest => {
-  const currentRequests = getRequests();
-  const newRequest: BookRequest = {
-    ...newRequestData,
-    id: Date.now().toString(36) + Math.random().toString(36).substring(2),
-    status: 'Pendente',
-  };
-  const updatedRequests = [...currentRequests, newRequest];
-  saveRequests(updatedRequests);
-  return newRequest;
+export const addRequest = async (newRequestData: Omit<BookRequest, 'id' | 'status'>): Promise<BookRequest> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/books/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...newRequestData,
+        status: 'Pendente', // Estado inicial
+      }),
+    });
+    const data = await handleResponse<BookRequest>(response);
+    return data;
+  } catch (error) {
+    console.error("Error adding request to backend:", error);
+    throw error;
+  }
 };
 
 // Función para actualizar o estado dunha solicitude
-export const updateRequestStatus = (id: string, status: RequestStatus): BookRequest[] => {
-  const currentRequests = getRequests();
-  const updatedRequests = currentRequests.map(req =>
-    req.id === id ? { ...req, status } : req
-  );
-  saveRequests(updatedRequests);
-  return updatedRequests;
+export const updateRequestStatus = async (id: string, status: RequestStatus): Promise<BookRequest> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/books/${id}/`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ status }),
+    });
+    const data = await handleResponse<BookRequest>(response);
+    return data;
+  } catch (error) {
+    console.error("Error updating request status:", error);
+    throw error;
+  }
 };
 
 // Función para eliminar unha solicitude
-export const deleteRequest = (id: string): BookRequest[] => {
-  const currentRequests = getRequests();
-  const updatedRequests = currentRequests.filter(req => req.id !== id);
-  saveRequests(updatedRequests);
-  return updatedRequests;
+export const deleteRequest = async (id: string): Promise<void> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/books/${id}/`, {
+      method: 'DELETE',
+    });
+    if (!response.ok && response.status !== 204) {
+      throw new Error(`Error HTTP: ${response.status}`);
+    }
+  } catch (error) {
+    console.error("Error deleting request:", error);
+    throw error;
+  }
 };

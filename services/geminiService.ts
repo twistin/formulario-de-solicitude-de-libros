@@ -1,15 +1,18 @@
 import type { BookRequest } from '../types';
 
-// Use Vite env var first (VITE_ prefix). Fallback to process.env for other environments.
-const API_KEY = (import.meta.env && (import.meta.env.VITE_API_KEY as string | undefined)) ?? (process.env.API_KEY as string | undefined);
+// Usar variable de entorno de Vite
+const API_KEY = import.meta.env.VITE_API_KEY || import.meta.env.VITE_GEMINI_API_KEY;
 
 export const generateCertificate = async (formData: BookRequest): Promise<string> => {
   const { name, email, book, date, id } = formData;
 
+  // Convertir id a string e tomar os últimos 6 caracteres
+  const certNumber = String(id).padStart(6, '0').slice(-6).toUpperCase();
+
   const template = `-----------------------------------------
 **Certificado de Solicitude de Libro**
 
-**Certificado Nro:** ${id.slice(-6).toUpperCase()}
+**Certificado Nro:** ${certNumber}
 
 Estimado/a **${name}**, 
 

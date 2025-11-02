@@ -23,16 +23,26 @@ const AdminView: React.FC<AdminViewProps> = ({ requests, setRequests }) => {
   const [requestToDelete, setRequestToDelete] = useState<BookRequest | null>(null);
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
 
-  const handleStatusChange = (id: string, newStatus: RequestStatus) => {
-    const updatedRequests = backendService.updateRequestStatus(id, newStatus);
-    setRequests(updatedRequests);
+  const handleStatusChange = async (id: number | string, newStatus: RequestStatus) => {
+    try {
+      const updatedRequest = await backendService.updateRequestStatus(String(id), newStatus);
+      setRequests(prev => prev.map(req => req.id === id ? updatedRequest : req));
+    } catch (error) {
+      console.error('Error updating status:', error);
+      alert('Erro ao actualizar o estado. Verifica que o backend estea en execución.');
+    }
   };
 
-  const handleDeleteRequest = () => {
+  const handleDeleteRequest = async () => {
     if (requestToDelete) {
-      const updatedRequests = backendService.deleteRequest(requestToDelete.id);
-      setRequests(updatedRequests);
-      setRequestToDelete(null);
+      try {
+        await backendService.deleteRequest(String(requestToDelete.id));
+        setRequests(prev => prev.filter(req => req.id !== requestToDelete.id));
+        setRequestToDelete(null);
+      } catch (error) {
+        console.error('Error deleting request:', error);
+        alert('Erro ao eliminar a solicitude. Verifica que o backend estea en execución.');
+      }
     }
   };
 

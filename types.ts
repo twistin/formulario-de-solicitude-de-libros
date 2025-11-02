@@ -1,7 +1,7 @@
 export type RequestStatus = 'Pendente' | 'Aprobado' | 'Mercado' | 'Rexeitado';
 
 export interface BookRequest {
-  id: string;
+  id: number | string; // Django devuelve number, localStorage usaba string
   name: string;
   email: string;
   book: string;
