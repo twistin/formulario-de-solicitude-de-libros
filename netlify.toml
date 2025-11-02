@@ -1,0 +1,19 @@
+[build]
+  # Comando para construir el frontend
+  command = "npm run build"
+  
+  # Directorio donde están los archivos compilados
+  publish = "dist"
+  
+  # No usar Python para el frontend
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF ."
+
+[build.environment]
+  # Node.js versión (no Python)
+  NODE_VERSION = "20"
+
+# Redirecciones para SPA (Single Page Application)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
