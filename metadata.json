@@ -1,0 +1,5 @@
+{
+  "name": "Formulario de Solicitude de Libros",
+  "description": "Un formulario sinxelo e elegante para que os estudantes soliciten novos libros para a biblioteca. A aplicación xera un certificado de confirmación usando Gemini.",
+  "requestFramePermissions": []
+}
