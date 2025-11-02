@@ -161,7 +161,7 @@ const AdminView: React.FC<AdminViewProps> = ({ requests, setRequests }) => {
       <QRCodeModal
         isOpen={isQrModalOpen}
         onClose={() => setIsQrModalOpen(false)}
-        url={window.location.href}
+        url={`${window.location.origin}?view=form`}
       />
     </div>
   );

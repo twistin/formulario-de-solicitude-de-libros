@@ -18,11 +18,19 @@ const App: React.FC = () => {
     book: '',
   });
   const [requests, setRequests] = useState<BookRequest[]>([]);
-  const [view, setView] = useState<'form' | 'admin' | 'login'>('login');
+  const [view, setView] = useState<'form' | 'admin' | 'login'>('form');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [certificate, setCertificate] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const viewParam = urlParams.get('view');
+    if (viewParam === 'form') {
+      setView('form');
+    }
+  }, []);
 
   useEffect(() => {
     // Cargar solicitudes iniciais do backend ao montar o compoñente
