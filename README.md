@@ -1,24 +1,52 @@
 # 📚 Sistema de Solicitudes de Libros
 
-Sistema completo de xestión de solicitudes de libros para bibliotecas, con frontend React + Vite e backend Django REST API.
+Sistema completo de xestión de solicitudes de libros para bibliotecas, con frontend React + Vite e backend Django REST API desplegado en producción.
 
-## ✨ Características
+![App Screenshot](images/app.png)
+
+## 🌐 Demostración en Vivo
+
+- **Frontend**: [https://formulario-libros-eoi.netlify.app](https://formulario-libros-eoi.netlify.app)
+- **Backend API**: [https://biblioteca-backend-yisd.onrender.com/api/books/](https://biblioteca-backend-yisd.onrender.com/api/books/)
+- **Admin Django**: [https://biblioteca-backend-yisd.onrender.com/admin/](https://biblioteca-backend-yisd.onrender.com/admin/)
+
+## 📖 Sobre a Aplicación
+
+Esta aplicación permite aos estudantes solicitar novos libros para a biblioteca da Escola Oficial de Idiomas (EOI). Os administradores poden xestionar as solicitudes, cambiar estados (Pendente, Aprobada, Rexeitada) e xerar certificados de confirmación en formato PDF.
+
+### Funcionalidades Principais
+
+**Para Estudantes:**
+- Formulario intuitivo para solicitar libros
+- Validación en tempo real dos campos
+- Xeración automática de certificado de solicitude
+- Acceso mediante código QR
+
+**Para Administradores:**
+- Panel de xestión de todas as solicitudes
+- Cambio de estado das solicitudes
+- Eliminación de solicitudes
+- Xeración de código QR para compartir coa comunidade
+
+## ✨ Características Técnicas
 
 ### Frontend (React + TypeScript + Vite)
-- 📝 Formulario de solicitude de libros con validación
-- 📜 Certificado de solicitude generado con Google Gemini AI
-- 👨‍💼 Panel de administración para xestionar solicitudes
-- 📱 Código QR para acceso rápido dos alumnos
+- 📝 Formulario de solicitude con validación de datos
+- 📜 Certificados de solicitude en formato PDF
+- 👨‍💼 Panel de administración protexido por contraseña
+- 📱 Código QR para acceso rápido
 - 🎨 Interfaz moderna con Tailwind CSS
-- ⚡ Rápido y reactivo con Vite
+- ⚡ Optimizado con Vite para máxima velocidade
+- 📱 Totalmente responsive (móbil, tablet, escritorio)
 
-### Backend (Django + DRF)
+### Backend (Django + DRF + PostgreSQL)
 - 🔌 API REST completa con operacións CRUD
-- 📊 Base de datos SQLite (configurable para PostgreSQL/MySQL)
+- �️ Base de datos PostgreSQL en producción
 - 🔐 Panel de administración Django
-- ✅ Validacións de datos con serializers
-- 🌐 CORS configurado para desarrollo
-- 📝 Endpoints documentados
+- ✅ Validacións robustas con serializers
+- 🌐 CORS configurado para Netlify
+- 📊 Sistema de estados para solicitudes
+- � Desplegado en Render.com
 
 ## 🚀 Inicio Rápido
 
@@ -130,8 +158,8 @@ formulario-de-solicitude-de-libros/
 │   ├── QRCodeModal.tsx
 │   └── ...
 ├── services/                 # Servicios del frontend
-│   ├── backendService.ts    # Comunicación con API
-│   └── geminiService.ts     # Integración Gemini AI
+│   ├── backendService.ts    # Comunicación con API Django
+│   └── geminiService.ts     # Xeración de certificados
 ├── App.tsx                  # Componente principal
 ├── index.tsx               # Entry point
 ├── package.json
@@ -144,8 +172,11 @@ formulario-de-solicitude-de-libros/
 ### Variables de Entorno - Frontend (.env.local)
 
 ```env
+# URL do backend API
 VITE_API_URL=http://localhost:8000/api
-VITE_API_KEY=tu_clave_gemini_opcional
+
+# Contraseña do panel de administración
+VITE_ADMIN_PASSWORD=biblioteca2024!
 ```
 
 ### Variables de Entorno - Backend (backend/.env)
@@ -227,32 +258,50 @@ cd backend/config
 python manage.py migrate --run-syncdb
 ```
 
-## 📚 Tecnologías Utilizadas
+## � Despregue en Producción
+
+### Frontend (Netlify)
+- Build automático desde GitHub
+- Variables de entorno configuradas
+- CDN global para máxima velocidade
+- HTTPS automático
+
+### Backend (Render.com)
+- PostgreSQL como base de datos
+- Gunicorn como servidor WSGI
+- WhiteNoise para servir arquivos estáticos
+- Despregue automático desde GitHub
+- Variables de entorno seguras
+
+## �📚 Tecnologías Utilizadas
 
 ### Frontend
-- React 19
-- TypeScript
-- Vite 6
-- Tailwind CSS
-- Google Gemini AI
-- qrcode.react
+- React 19.2.0
+- TypeScript 5
+- Vite 6.4.1
+- Tailwind CSS 3
+- qrcode.react 3.1.0
+- jsPDF para certificados
 
 ### Backend
-- Django 4.2
-- Django REST Framework
-- django-cors-headers
-- SQLite (configurable)
+- Django 4.2.23
+- Django REST Framework 3.14+
+- PostgreSQL (producción)
+- django-cors-headers 4.0+
+- gunicorn 23.0+
+- whitenoise 6.6+
+- dj-database-url 2.1+
 
 ## 🔐 Seguridade
 
-⚠️ **Para Producción:**
-- Cambia `SECRET_KEY` en Django
-- Configura `DEBUG=False`
-- Usa PostgreSQL/MySQL en lugar de SQLite
-- Configura `ALLOWED_HOSTS` e `CORS_ALLOWED_ORIGINS`
-- Usa HTTPS
-- Implementa autenticación e autorización
-- Valida e sanitiza todas as entradas
+✅ **Implementado en Producción:**
+- `SECRET_KEY` único e seguro en variables de entorno
+- `DEBUG=False` en producción
+- PostgreSQL como base de datos en Render
+- `ALLOWED_HOSTS` e `CORS_ALLOWED_ORIGINS` configurados
+- HTTPS habilitado en Netlify e Render
+- Validación e sanitización de todas as entradas
+- Panel de administración protexido por contraseña
 
 ## 🤝 Contribución
 
@@ -262,7 +311,34 @@ As contribucións son benvidas! Por favor:
 3. Fai commit dos cambios
 4. Envía un pull request
 
-## 📄 Licenza
+## � Guía de Despregue
+
+### Despregue do Backend en Render
+
+1. Conecta o repositorio de GitHub
+2. Crea un servizo Web con estas configuracións:
+   - **Build Command**: `./build.sh`
+   - **Start Command**: `cd backend/config && gunicorn config.wsgi:application`
+3. Crea unha base de datos PostgreSQL en Render
+4. Configura as variables de entorno:
+   - `PYTHON_VERSION=3.11.9`
+   - `DJANGO_SECRET_KEY=<clave-secreta>`
+   - `DJANGO_DEBUG=False`
+   - `FRONTEND_URL=https://formulario-libros-eoi.netlify.app`
+
+### Despregue do Frontend en Netlify
+
+1. Conecta o repositorio de GitHub
+2. Configuración de build:
+   - **Build Command**: `npm run build`
+   - **Publish Directory**: `dist`
+3. Configura as variables de entorno:
+   - `VITE_API_URL=https://biblioteca-backend-yisd.onrender.com/api`
+   - `VITE_ADMIN_PASSWORD=<contraseña-admin>`
+
+Consulta os arquivos `DEPLOY.md` e `DEPLOY_QUICK.md` para máis detalles.
+
+## �📄 Licenza
 
 Este proxecto está baixo a licenza MIT.
 
@@ -270,6 +346,12 @@ Este proxecto está baixo a licenza MIT.
 
 Para preguntas ou soporte, por favor abre un issue no repositorio.
 
+## 🙏 Agradecementos
+
+Desenvolvido para a comunidade da **Escola Oficial de Idiomas (EOI)** para facilitar a xestión de solicitudes de novos libros na biblioteca.
+
 ---
 
-Feito con ❤️ para a Biblioteca Dixital
+Feito con ❤️ para a Biblioteca Dixital da EOI
+
+**Estado**: ✅ En producción e funcionando
