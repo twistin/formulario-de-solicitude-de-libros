@@ -33,28 +33,14 @@ Configura un servicio externo que haga ping cada 14 minutos para mantener el ser
    - **Enabled**: ✅
 4. **Save**
 
-#### Opción C: GitHub Actions (Gratis, Avanzado)
+#### Opción C: Easycron (Gratis)
 
-Crea `.github/workflows/keep-alive.yml`:
-
-```yaml
-name: Keep Alive Backend
-
-on:
-  schedule:
-    # Ejecutar cada 10 minutos
-    - cron: '*/10 * * * *'
-  workflow_dispatch: # Permite ejecutar manualmente
-
-jobs:
-  keep-alive:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Ping Backend
-        run: |
-          curl https://biblioteca-backend-yisd.onrender.com/health/
-          echo "Backend keep-alive ping sent"
-```
+1. **Ve a**: https://www.easycron.com/
+2. **Regístrate gratis**
+3. **Create Cron Job**:
+   - **URL**: `https://biblioteca-backend-yisd.onrender.com/health/`
+   - **Schedule**: Every 10 minutes
+4. **Save**
 
 ## 📊 Resultados Esperados
 
