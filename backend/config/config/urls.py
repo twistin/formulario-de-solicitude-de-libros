@@ -16,8 +16,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.http import JsonResponse
+
+
+def health_check(request):
+    """Endpoint ligero para verificar que o servidor está activo"""
+    return JsonResponse({"status": "ok", "message": "Server is running"})
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('books.urls')),  # API endpoints
+    path('health/', health_check, name='health_check'),  # Health check
 ]

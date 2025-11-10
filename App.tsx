@@ -47,6 +47,20 @@ const App: React.FC = () => {
       }
     };
     loadRequests();
+
+    // Keep-alive ping: fai unha petición cada 10 minutos para manter o backend activo
+    const keepAliveInterval = setInterval(async () => {
+      try {
+        // Usar endpoint de health check que é máis lixeiro
+        const apiUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:8000';
+        await fetch(`${apiUrl}/health/`);
+        console.log('Keep-alive ping sent');
+      } catch (err) {
+        console.error('Keep-alive ping failed:', err);
+      }
+    }, 10 * 60 * 1000); // 10 minutos
+
+    return () => clearInterval(keepAliveInterval);
   }, []);
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
